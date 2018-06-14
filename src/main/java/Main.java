@@ -13,14 +13,15 @@ import java.awt.*;
 import java.io.*;
 
 public class Main {
-GifSequense
+
     public static void main(String[] args) throws IOException, AWTException {
         /////////////////////////////////////////////////////////////////////////////////////
+        String path = "c:\\Users\\Minchanka\\Documents\\testScreenshots\\";
+        String table ="/html/body[@id='bd']/div[@id='ja-wrapper']/div[@id='ja-wrapper-inner']/div[@id='ja-containerwrap']/div[@id='ja-container']/div[@id='ja-mainbody']/div[@id='ja-contentwrap']/div[@id='ja-content']/table[@id='curr_table']";
         ChromeDriver driver;
         Main m = new Main();
-        String path = "c:\\Users\\Minchanka\\Documents\\testScreenshots\\";
         m.setRootScreenshotsDir(path);
-        Setup.driver("gecko", "windows");
+        Setup.driver("chrome", "windows");
         driver = new ChromeDriver();
         Setup setup = new Setup(driver);
         setup.addWindow( "https://select.by/kurs/");
@@ -32,21 +33,19 @@ GifSequense
         Robot bot = new Robot();
         bot.mouseMove(0, 0);
         //////////////////////////////////////////////////////////////////////////////////////
+        // Обычный скриншот страницы
 //        Screenshot screenshot = new AShot().takeScreenshot(driver);
-//// получаем скриншот страницы
-//        //////////////////////////////////////////////////////////////////////////////////////
-//  //      Снимок страницы со скроллом:
-//        Screenshot screenshot1 = new AShot()
-//                .shootingStrategy(ShootingStrategies.viewportPasting(100)).takeScreenshot(driver);
-        Screenshot actualScreenshot = new AShot()
-                .shootingStrategy(ShootingStrategies.viewportPasting(100)).takeScreenshot(driver);
-////        ////////////////////////////////////////////////////////////////////////////////////////
-////        //Скриншот веб-элемента:
-//        WebElement header = driver.findElement(By.xpath("/html/body[@id='bd']/div[@id='ja-wrapper']/div[@id='ja-wrapper-inner']/div[@id='ja-containerwrap']/div[@id='ja-container']/div[@id='ja-mainbody']/div[@id='ja-contentwrap']/div[@id='ja-content']/table[@id='curr_table']"));
-//        Screenshot screenshot2 = new AShot().takeScreenshot(driver, header);
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Скриншот со скроллом:
+//        Screenshot screenshot1 = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(100)).takeScreenshot(driver);
+        Screenshot actualScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(100)).takeScreenshot(driver);
+        ////////////////////////////////////////////////////////////////////////////////////////
+        //Скриншот веб-элемента:
+//        WebElement table = driver.findElement(By.xpath(table));
+//        Screenshot screenshot2 = new AShot().takeScreenshot(driver, table);
 //
-//        Screenshot screenshot3 = new AShot()
-//                .shootingStrategy(ShootingStrategies.viewportPasting(100)).takeScreenshot(driver,header);
+//        Screenshot screenshot3 = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(100)).takeScreenshot(driver,header);
         ////////////////////////////////////////////////////////////////////////////////////////
         //Сохраняем полученный скриншот в файл:
 
@@ -65,16 +64,21 @@ GifSequense
 //        File actualFile3 = new File(path + "\\actual\\screenshot3.png");
 //        ImageIO.write(screenshot3.getImage(), "PNG", actualFile3);
         ////////////////////////////////////////////////////////////////////////////////////////
+        //Достаём скриншот,который будет использоваться как EXPECTED
         Screenshot expectedScreenshot = new Screenshot(ImageIO.read(new File(path+"\\actual\\screenshot1.png")));
+        //Сравниваем expected с actual
         ImageDiff diff = new ImageDiffer().makeDiff(expectedScreenshot, actualScreenshot);
         ////////////////////////////////////////////////////////////////////////////////////////
+        //получаем результат сравнения
         diff.getDiffSize();
+        //проверка на колличество отличий(по пикселям)
+//        Assert.assertEquals(diff.getDiffSize(), 0);
+        //складываем полученный результат
         File diffFile = new File(path+"\\diff\\screenshot1.png");
         ImageIO.write(diff.getMarkedImage(), "png", diffFile);
-
-        Gif
-//        File[] filesArray = {new File(path+"\\actual\\screenshot1.png"), new File(path+"\\expected\\screenshot1.png"), diffFile};
-//        Object gifFile = GifSequenceWriter.createGIF(filesArray, path + "\\gifs\\gif.gif");
+        //Преобразование в гиф
+//        File[] filesArray = {expectedFile, actualFile, diffFile};
+//        gifFile = GifSequenceWriter.createGIF(filesArray, resultGifs+name);
         ////////////////////////////////////////////////////////////////////////////////////////
         driver.close();
 
